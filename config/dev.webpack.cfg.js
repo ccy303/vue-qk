@@ -38,23 +38,7 @@ module.exports = {
 							"style-loader",
 							{
 								loader: "css-loader",
-								options: {
-									modules: {
-										localIdentName: "[local]-[hash:base64:10]",
-										getLocalIdent: (context, localIdentName, localName) => {
-											const path = context._module.context;
-											if (
-												/^((?!node_modules).)*(src){1}.*(components){1}.*$/.test(
-													path
-												)
-											) {
-												return;
-											} else {
-												return localName;
-											}
-										},
-									},
-								},
+								options: {},
 							},
 							"postcss-loader",
 						],
@@ -65,23 +49,7 @@ module.exports = {
 							"style-loader",
 							{
 								loader: "css-loader",
-								options: {
-									modules: {
-										localIdentName: "[local]-[hash:base64:10]",
-										getLocalIdent: (context, localIdentName, localName) => {
-											const path = context._module.context;
-											if (
-												/^((?!node_modules).)*(src){1}.*(components){1}.*$/.test(
-													path
-												)
-											) {
-												return;
-											} else {
-												return localName;
-											}
-										},
-									},
-								},
+								options: {},
 							},
 							"postcss-loader",
 							{
@@ -91,12 +59,6 @@ module.exports = {
 										modifyVars: {},
 										javascriptEnabled: true,
 									},
-								},
-							},
-							{
-								loader: "style-resources-loader",
-								options: {
-									patterns: path.resolve(__dirname, "../src/styles/common.less"),
 								},
 							},
 						],
@@ -136,6 +98,7 @@ module.exports = {
 		extensions: [".js", ".json", ".css", ".vue"],
 		alias: {
 			"@src": path.resolve(__dirname, "../src"),
+			vue$: "vue/dist/vue.esm.js",
 		},
 	},
 	devServer: {

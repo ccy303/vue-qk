@@ -97,12 +97,6 @@ module.exports = {
 									},
 								},
 							},
-							{
-								loader: "style-resources-loader",
-								options: {
-									patterns: path.resolve(__dirname, "../src/styles/common.less"),
-								},
-							},
 						],
 					},
 					{
@@ -127,6 +121,7 @@ module.exports = {
 		extensions: [".js", ".json", ".css", ".vue"],
 		alias: {
 			"@src": path.resolve(__dirname, "../src"),
+			vue$: "vue/dist/vue.esm.js",
 		},
 	},
 	plugins: [
@@ -136,7 +131,7 @@ module.exports = {
 			template: "./public/template.html",
 			filename: "index.html",
 			favicon: "./favicon.ico",
-			title: '标题',
+			title: "标题",
 		}),
 		new CleanWebpackPlugin({ verbose: true }),
 		new MiniCssExtractPlugin({
@@ -150,7 +145,7 @@ module.exports = {
 			new CssMinimizerPlugin(),
 			new TerserPlugin({
 				parallel: true,
-                extractComments: false
+				extractComments: false,
 			}),
 			// new CompressionPlugin()
 		],

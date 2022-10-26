@@ -1,24 +1,20 @@
 <template>
-    <div class="test">
-        哈哈哈哈123
-        <div class="test1">123</div>
+    <div class="container">
+        <router-view></router-view>
     </div>
 </template>
 
 <script>
 export default {
     mounted() {
-        console.log(123);
-    },
+        console.log(this);
+    }
 };
 </script>
 
 <style scoped lang="less">
-.test {
-    background: #000;
-    color: #fff;
-    .test1 {
-        background: red;
-    }
+.container {
+    display: flex;
+    height: 100%;
 }
 </style>
