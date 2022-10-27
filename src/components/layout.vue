@@ -2,75 +2,98 @@
     <el-container class="container">
         <cHeader />
         <el-container>
-            <el-aside width="200px">
-                <el-menu :router="true" :default-active="defauleActive">
-                    <template v-for="menu in menus">
-                        <template v-if="!menu.children">
-                            <el-menu-item :index="menu.fullPath" :key="menu.fullPath">
-                                <span slot="title"> {{ menu.title }} </span>
-                            </el-menu-item>
-                        </template>
-                        <template v-else>
-                            <el-submenu :key="menu.fullPath" :index="menu.fullPath">
-                                <span slot="title"> {{ menu.title }} </span>
-                                <el-menu-item
-                                    v-for="subMenu in menu.children"
-                                    :index="subMenu.fullPath"
-                                    :key="subMenu.fullPath"
-                                >
-                                    {{ subMenu.title }}
-                                </el-menu-item>
-                            </el-submenu>
-                        </template>
-                    </template>
+            <el-aside class="aside" width="200px">
+                <el-menu :router="true" :default-active="defauleActive" class="menu">
+                    <menuItem v-for="menu in menus" :menu="menu" :key="menu.title" />
                 </el-menu>
             </el-aside>
-            <el-main>
-                <router-view></router-view>
+            <el-main class="main">
+                <div class="breadcrumb">
+                    <el-breadcrumb separator=">">
+                        <template v-for="item in breadcrumb">
+                            <el-breadcrumb-item :key="item.path" :replace="true" :to="item.to">
+                                {{ item.title }}
+                            </el-breadcrumb-item>
+                        </template>
+                    </el-breadcrumb>
+                </div>
+                <transition name="fade" mode="out-in">
+                    <div class="content">
+                        <router-view></router-view>
+                    </div>
+                </transition>
             </el-main>
         </el-container>
     </el-container>
 </template>
 
+
 <script>
 import cHeader from "./header";
+import menuItem from "./menuItem.vue";
 export default {
     data() {
         return {
             menus: [],
-            defauleActive: ""
+            defauleActive: "",
+            breadcrumb: []
         };
     },
     components: {
-        cHeader
+        cHeader,
+        menuItem
     },
     watch: {
         $route(to, from) {
             this.defauleActive = to.fullPath;
+            this.updateBreadcrumb(this.$route.matched.slice(-1)[0]);
         }
     },
     mounted() {
-        console.log(this);
         this.menus = this.getMenus(this.$router.options.routes);
-        this.defauleActive = this.$router.currentRoute.fullPath;
+        this.defauleActive = this.$route.path;
+        this.updateBreadcrumb(this.$route.matched.slice(-1)[0]);
     },
     methods: {
         getMenus(routes = [], path = "") {
             const menus = [];
-            routes.map(v => {
-                v.fullPath = path + (v.path[0] == "/" ? v.path : `/${v.path}`);
-                if (v.children) {
-                    if (v.menu) {
-                        v.children = this.getMenus(v.children, v.fullPath);
-                        menus.push(v);
+            routes.map(route => {
+                route.fullPath = path + (route.path[0] == "/" ? route.path : `/${route.path}`);
+                if (route.children) {
+                    if (route.menu) {
+                        menus.push({
+                            path: route.path,
+                            title: route.title,
+                            fullPath: route.fullPath,
+                            children: this.getMenus(route.children, route.fullPath)
+                        });
                     } else {
-                        menus.push(...(this.getMenus(v.children, v.fullPath) || []));
+                        menus.push(...(this.getMenus(route.children, route.fullPath) || []));
                     }
                 } else {
-                    v.menu && menus.push(v);
+                    route.menu &&
+                        menus.push({
+                            path: route.path,
+                            title: route.title,
+                            fullPath: route.fullPath
+                        });
                 }
             });
             return menus;
+        },
+        updateBreadcrumb(currentRoute, routes = this.$router.options.routes) {
+            console.log(currentRoute);
+            if (!currentRoute) return [];
+            routes.map(route => {
+                if (currentRoute.regex.test(route.fullPath)) {
+                    this.breadcrumb = route.breadcrumb;
+                    return;
+                } else {
+                    if (route.children) {
+                        this.updateBreadcrumb(currentRoute, route.children);
+                    }
+                }
+            });
         }
     }
 };
@@ -81,5 +104,27 @@ export default {
     display: flex;
     flex-direction: column;
     height: 100%;
+    .aside {
+        .menu {
+            height: 100%;
+        }
+    }
+    .main {
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        .breadcrumb {
+            box-shadow: 0 4px 12px 0 hsla(0, 0%, 62%, 0.1);
+            height: 48px;
+            line-height: 48px;
+            display: flex;
+            align-items: center;
+            padding: 0 0 0 24px;
+        }
+        .content {
+            flex: 1;
+            padding: 20px;
+        }
+    }
 }
 </style>

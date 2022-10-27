@@ -23,35 +23,49 @@ const router = new VueRouter({
             component: () => import("@src/pages/home")
         },
         {
-            path: "/admin_1",
-            title: "菜单1",
+            path: "/bus",
+            title: "一级",
             menu: true,
             component: () => import("@src/components/layout"),
-            redirect: "/admin_1/index",
+            redirect: "/bus/list",
             children: [
                 {
-                    path: "index",
-                    title: "子菜单",
+                    path: "list",
+                    title: "二级",
                     menu: true,
-                    component: UserProfile
-                }
-            ]
-        },
-        {
-            path: "/admin_2",
-            title: "菜单2",
-            menu: true,
-            component: () => import("@src/components/layout"),
-            redirect: "/admin_1/index",
-            children: [
+                    component: UserProfile,
+                    breadcrumb: [
+                        { title: "面包屑1", to: "/" },
+                        { title: "面包屑2", to: "" }
+                    ]
+                },
                 {
-                    path: "index",
-                    title: "子菜单",
+                    path: "list2",
+                    title: "二级",
                     menu: true,
-                    component: UserPosts
+                    component: UserProfile,
+                    breadcrumb: [
+                        { title: "面包屑1-1", to: "/" },
+                        { title: "面包屑2-2", to: "" }
+                    ]
                 }
             ]
         }
+        // {
+        //     path: "/admin_2",
+        //     title: "菜单2",
+        //     menu: true,
+        //     component: () => import("@src/components/layout"),
+        //     redirect: "/admin_2/index",
+        //     children: [
+        //         {
+        //             path: "index",
+        //             title: "子菜单",
+        //             menu: true,
+        //             component: UserPosts
+        //         }
+        //     ]
+        // }
     ]
 });
 
