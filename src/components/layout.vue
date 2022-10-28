@@ -10,11 +10,14 @@
             <el-main class="main">
                 <div class="breadcrumb">
                     <el-breadcrumb separator=">">
-                        <template v-for="item in breadcrumb">
-                            <el-breadcrumb-item :key="item.path" :replace="true" :to="item.to">
-                                {{ item.title }}
-                            </el-breadcrumb-item>
-                        </template>
+                        <el-breadcrumb-item
+                            v-for="(item, idx) in breadcrumb"
+                            :key="idx"
+                            :replace="true"
+                            :to="item.to"
+                        >
+                            {{ item.title }}
+                        </el-breadcrumb-item>
                     </el-breadcrumb>
                 </div>
                 <transition name="fade" mode="out-in">
@@ -30,7 +33,7 @@
 
 <script>
 import cHeader from "./header";
-import menuItem from "./menuItem.vue";
+import menuItem from "./menuItem";
 export default {
     data() {
         return {
@@ -45,14 +48,16 @@ export default {
     },
     watch: {
         $route(to, from) {
-            this.defauleActive = to.fullPath;
-            this.updateBreadcrumb(this.$route.matched.slice(-1)[0]);
+            const currentRoute = this.$route.matched.slice(-1)[0];
+            this.defauleActive = this.getRouteByPathRegExp(currentRoute.regex)?.acPath || to.fullPath;
+            this.updateBreadcrumb(currentRoute);
         }
     },
     mounted() {
+        const currentRoute = this.$route.matched.slice(-1)[0];
         this.menus = this.getMenus(this.$router.options.routes);
-        this.defauleActive = this.$route.path;
-        this.updateBreadcrumb(this.$route.matched.slice(-1)[0]);
+        this.defauleActive = this.getRouteByPathRegExp(currentRoute.regex)?.acPath || this.$route.path;
+        this.updateBreadcrumb(currentRoute);
     },
     methods: {
         getMenus(routes = [], path = "") {
@@ -81,8 +86,8 @@ export default {
             });
             return menus;
         },
+
         updateBreadcrumb(currentRoute, routes = this.$router.options.routes) {
-            console.log(currentRoute);
             if (!currentRoute) return [];
             routes.map(route => {
                 if (currentRoute.regex.test(route.fullPath)) {
@@ -94,6 +99,22 @@ export default {
                     }
                 }
             });
+        },
+
+        getRouteByPathRegExp(exp, routes = this.$router.options.routes) {
+            let out = null;
+            for (let i = 0; i < routes.length; i++) {
+                if (exp?.test(routes[i].fullPath)) {
+                    out = routes[i];
+                    break;
+                } else if (routes[i].children) {
+                    out = this.getRouteByPathRegExp(exp, routes[i].children);
+                    if (out) {
+                        break;
+                    }
+                }
+            }
+            return out;
         }
     }
 };

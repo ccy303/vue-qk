@@ -3,7 +3,7 @@
         <cHeader />
         <img width="100%" :src="require('@src/assets/bg.gif')" alt="" />
         <div class="btn">
-            <router-link to="/admin_1"><el-button type="primary">前往后台</el-button></router-link>
+            <router-link to="/bus"><el-button type="primary">前往后台</el-button></router-link>
         </div>
     </div>
 </template>

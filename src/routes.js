@@ -6,7 +6,7 @@ const EmptyRouter = {
 };
 
 const UserProfile = {
-    template: `<div>UserProfile</div>`
+    template: `<div><router-link to="/bus/list-dtl">详情</router-link to="/bus"></div>`
 };
 const UserPosts = {
     template: `<div>UserPosts</div>`
@@ -33,10 +33,22 @@ const router = new VueRouter({
                     path: "list",
                     title: "二级",
                     menu: true,
-                    component: UserProfile,
+                    component: () => import("@src/pages/page1"),
                     breadcrumb: [
                         { title: "面包屑1", to: "/" },
                         { title: "面包屑2", to: "" }
+                    ]
+                },
+                {
+                    path: "list-dtl",
+                    title: "详情",
+                    menu: false,
+                    component: UserProfile,
+                    acPath: "/bus/list",
+                    breadcrumb: [
+                        { title: "面包屑1", to: "/" },
+                        { title: "面包屑2", to: "" },
+                        { title: "面包屑3", to: "" }
                     ]
                 },
                 {
@@ -50,22 +62,34 @@ const router = new VueRouter({
                     ]
                 }
             ]
+        },
+        {
+            path: "/admin_2",
+            title: "菜单2",
+            menu: true,
+            component: () => import("@src/components/layout"),
+            redirect: "/admin_2/index",
+            children: [
+                {
+                    path: "index",
+                    title: "子菜单",
+                    menu: true,
+                    component: UserPosts
+                }
+            ]
+        },
+        {
+            path: "/403",
+            title: "403",
+            menu: false,
+            component: () => import("@src/components/403")
+        },
+        {
+            path: "*",
+            title: "404",
+            menu: false,
+            component: () => import("@src/components/404")
         }
-        // {
-        //     path: "/admin_2",
-        //     title: "菜单2",
-        //     menu: true,
-        //     component: () => import("@src/components/layout"),
-        //     redirect: "/admin_2/index",
-        //     children: [
-        //         {
-        //             path: "index",
-        //             title: "子菜单",
-        //             menu: true,
-        //             component: UserPosts
-        //         }
-        //     ]
-        // }
     ]
 });
 
