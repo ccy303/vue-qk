@@ -1,15 +1,8 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
 
-const EmptyRouter = {
-    template: `<router-view></router-view>`
-};
-
 const UserProfile = {
     template: `<div><router-link to="/bus/list-dtl">详情</router-link to="/bus"></div>`
-};
-const UserPosts = {
-    template: `<div>UserPosts</div>`
 };
 
 Vue.use(VueRouter);
@@ -74,7 +67,12 @@ const router = new VueRouter({
                     path: "index",
                     title: "子菜单",
                     menu: true,
-                    component: UserPosts
+                    component: () => import("@src/pages/page2"),
+                    breadcrumb: [
+                        { title: "面包屑1", to: "/" },
+                        { title: "面包屑2", to: "" },
+                        { title: "面包屑3", to: "" }
+                    ]
                 }
             ]
         },

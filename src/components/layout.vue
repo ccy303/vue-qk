@@ -49,14 +49,16 @@ export default {
     watch: {
         $route(to, from) {
             const currentRoute = this.$route.matched.slice(-1)[0];
-            this.defauleActive = this.getRouteByPathRegExp(currentRoute.regex)?.acPath || to.fullPath;
+            this.defauleActive =
+                this.getRouteByPathRegExp(currentRoute.regex)?.acPath || to.fullPath;
             this.updateBreadcrumb(currentRoute);
         }
     },
     mounted() {
         const currentRoute = this.$route.matched.slice(-1)[0];
         this.menus = this.getMenus(this.$router.options.routes);
-        this.defauleActive = this.getRouteByPathRegExp(currentRoute.regex)?.acPath || this.$route.path;
+        this.defauleActive =
+            this.getRouteByPathRegExp(currentRoute.regex)?.acPath || this.$route.path;
         this.updateBreadcrumb(currentRoute);
     },
     methods: {
@@ -143,8 +145,10 @@ export default {
             padding: 0 0 0 24px;
         }
         .content {
-            flex: 1;
+            height: calc(100vh - 60px - 48px);
             padding: 20px;
+            box-sizing: border-box;
+            overflow: auto;
         }
     }
 }
