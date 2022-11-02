@@ -9,8 +9,16 @@ Vue.use(VueRouter);
 
 Vue.use(ElementUI, { size: "medium", zIndex: 3000 });
 
+Vue.mixin({
+    methods: {
+        getDataType(data) {
+            return Object.prototype.toString.call(data);
+        }
+    }
+});
+
 new Vue({
-	el: "#root",
-	router: routes,
-	render: (render) => render(App),
+    el: "#root",
+    router: routes,
+    render: render => render(App)
 });

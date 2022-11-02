@@ -19,7 +19,7 @@ export default {
             type: Array,
             default: () => []
         },
-        tabConfig: {
+        tableConfig: {
             type: Object || null,
             default: () => {}
         },
@@ -37,7 +37,7 @@ export default {
         },
         searchConfig: {
             type: Object || mull,
-            default: {}
+            default: () => ({})
         }
     },
     mounted() {
@@ -70,6 +70,19 @@ export default {
         }
     },
     render(createElement) {
+        const {
+            tablsConfig,
+            data,
+            columns,
+            showIndex,
+            localPage,
+            pageConfig,
+            dataTotal,
+            currentPageChg,
+            pageSizeChg,
+            $scopedSlots,
+            getDataType
+        } = this;
         return createElement("div", {}, [
             createElement(
                 "el-table",
@@ -78,26 +91,51 @@ export default {
                         size: "small",
                         stripe: true,
                         border: true,
-                        ...this.tabConfig,
-                        data: this.data
+                        ...tablsConfig,
+                        data
                     }
                 },
                 [
-                    (this.showIndex
-                        ? [{ label: "序号", prop: "_index" }, ...this.columns]
-                        : this.columns
-                    ).map(({ ...other }) => {
-                        return createElement(
-                            "el-table-column",
-                            {
-                                props: {
-                                    align: "center",
-                                    ...other
-                                }
+                    (showIndex ? [{ label: "序号", prop: "_index" }, ...columns] : columns).map(
+                        ({ render: _render, ...other }) => {
+                            return createElement(
+                                "el-table-column",
+                                {
+                                    props: {
+                                        align: "center",
+                                        ...other
+                                    },
+                                    scopedSlots: {
+                                        default: function (props) {
+                                            return _render &&
+                                                getDataType(_render) == "[object Function]"
+                                                ? _render(
+                                                      props.row[other.prop],
+                                                      props.row,
+                                                      props.$index,
+                                                      createElement
+                                                  )
+                                                : props.row[other.prop];
+                                        }
+                                    }
+                                },
+                                []
+                            );
+                        }
+                    ),
+                    // 操作列
+                    $scopedSlots.action &&
+                        createElement("el-table-column", {
+                            props: {
+                                align: "center",
+                                label: "操作"
                             },
-                            []
-                        );
-                    })
+                            scopedSlots: {
+                                default: function (props) {
+                                    return createElement("span", {}, [$scopedSlots.action(props)]);
+                                }
+                            }
+                        })
                 ]
             ),
             // 分页器
@@ -105,7 +143,7 @@ export default {
                 "div",
                 {
                     attrs: {
-                        class: "c--page"
+                        class: "c-page"
                     }
                 },
                 [
@@ -119,14 +157,14 @@ export default {
                                 "prev-text": "上一页",
                                 "next-text": "下一页",
                                 "hide-on-single-page": false,
-                                "page-size": Number(this.localPage.pageSize),
-                                "current-page": Number(this.localPage.currentPage),
-                                ...this.pageConfig,
-                                total: this.dataTotal
+                                "page-size": Number(localPage.pageSize),
+                                "current-page": Number(localPage.currentPage),
+                                ...pageConfig,
+                                total: dataTotal
                             },
                             on: {
-                                "current-change": this.currentPageChg,
-                                "size-change": this.pageSizeChg
+                                "current-change": currentPageChg,
+                                "size-change": pageSizeChg
                             }
                         },
                         []
@@ -139,7 +177,7 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.c--page {
+.c-page {
     text-align: right;
     margin-top: 20px;
     padding-right: 10px;

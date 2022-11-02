@@ -1,9 +1,11 @@
 <template>
     <div>
-        <cForm ref="form" :items="items" :inline="true">
-            <div slot="btns">
+        <cForm ref="form" :items="items">
+            <template v-slot:btns>
                 <el-button @click="submit">提交</el-button>
-            </div>
+                <el-button @click="() => validateField('name1')">校验</el-button>
+                <el-button @click="resetFields">重置</el-button>
+            </template>
         </cForm>
     </div>
 </template>
@@ -21,10 +23,7 @@ export default {
                     label: "文本输入1",
                     type: "text",
                     name: "name1",
-                    rules: [
-                        { required: true, message: "文本输入1" },
-                        { type: "number", message: "必须为数字值" }
-                    ],
+                    rules: [{ required: true, message: "文本输入1" }],
                     props: {
                         disabled: false,
                         "prefix-icon": "el-icon-platform-eleme"
@@ -46,17 +45,49 @@ export default {
                     props: {
                         disabled: false
                     }
-                }
+                },
+                [
+                    {
+                        label: "一行N个",
+                        type: "select",
+                        name: "name32",
+                        options: [{ label: "选项", value: "选项" }],
+                        props: {
+                            disabled: false
+                        }
+                    },
+                    {
+                        label: "一行N个",
+                        type: "select",
+                        name: "name31",
+                        options: [{ label: "选项", value: "选项" }],
+                        props: {
+                            disabled: false
+                        }
+                    },
+                    {
+                        label: "一行N个",
+                        type: "select",
+                        name: "name33",
+                        options: [{ label: "选项", value: "选项" }],
+                        props: {
+                            disabled: false
+                        }
+                    }
+                ]
             ]
         };
-    },
-    mounted() {
-        console.log(this.$refs);
     },
     methods: {
         async submit() {
             const res = await this.$refs.form.validate();
             console.log(res);
+        },
+        validateField(names, callback) {
+            this.$refs.form.validateField(names, callback);
+        },
+        resetFields() {
+            this.$refs.form.resetFields();
         }
     }
 };

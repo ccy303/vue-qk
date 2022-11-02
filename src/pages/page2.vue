@@ -1,7 +1,9 @@
 <template>
-    <div>
-        <cTable :columns="columns" :request="getData" :tabConfig="{}"> </cTable>
-    </div>
+    <cTable :columns="columns" :request="getData" :tablsConfig="{}">
+        <template v-slot:action="scope">
+            <el-button @click="click(scope)">处理按钮</el-button>
+        </template>
+    </cTable>
 </template>
 
 <script>
@@ -13,7 +15,10 @@ export default {
             columns: [
                 {
                     label: "标题1",
-                    prop: "a"
+                    prop: "a",
+                    render: (text, row, index, h) => {
+                        return text * 10000;
+                    }
                 },
                 {
                     label: "标题2",
@@ -46,6 +51,9 @@ export default {
                 ],
                 total: 100
             });
+        },
+        click(...arg) {
+            console.log(arg);
         }
     }
 };

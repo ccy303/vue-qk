@@ -1,18 +1,30 @@
 <template>
-    <div>
-        <el-form ref="formRef" :model="form" :inline="inline">
+    <el-form ref="formRef" :model="form" :label-width="labelWidth">
+        <template v-for="item in items">
             <formItem
-                v-for="item in items"
-                :key="item.name"
+                v-if="getDataType(item) == '[object Object]'"
                 v-model="form[item.name]"
                 :item="item"
+                :key="`if-${item.name}`"
             />
-            <el-form-item>
-                <!-- <slot name="btns"></slot> -->
-                <el-button @click="validate">提交</el-button>
-            </el-form-item>
-        </el-form>
-    </div>
+            <el-row
+                v-else-if="getDataType(item) == '[object Array]'"
+                :gutter="20"
+                :key="`else-${item.name}`"
+            >
+                <el-col
+                    v-for="col in item"
+                    :span="Math.floor(24 / item.length)"
+                    :key="`col-${col.name}`"
+                >
+                    <formItem v-model="form[col.name]" :item="col" />
+                </el-col>
+            </el-row>
+        </template>
+        <div class="btn-group">
+            <slot name="btns"></slot>
+        </div>
+    </el-form>
 </template>
 
 <script>
@@ -20,37 +32,58 @@ import formItem from "./formItem";
 export default {
     name: "cForm",
     data() {
-        const form = {};
-        this.items?.map(v => {
-            form[v.name] = "";
-        });
+        const form = this.formatForm(this.items);
         return { form };
     },
     props: {
-        inline: {
-            default: false
-        },
         items: {
             type: Array,
             default: () => []
+        },
+        ["label-width"]: {
+            type: String,
+            default: "100px"
         }
     },
     components: {
         formItem
     },
     methods: {
-        log() {
-            console.log(this.form);
-        },
         async validate() {
-            console.log(this.$refs.formRef.validate());
+            await this.$refs.formRef.validate();
+            return JSON.parse(JSON.stringify(this.form));
         },
-        validateField() {},
-        resetFields() {},
-        clearValidate() {}
+        validateField(names, callback) {
+            this.$refs.formRef.validateField(names, callback);
+        },
+        resetFields() {
+            this.$refs.formRef.resetFields();
+        },
+        clearValidate() {
+            this.$refs.formRef.clearValidate();
+        },
+        formatForm(data = []) {
+            let form = {};
+            data.map(v => {
+                if (this.getDataType(v) == "[object Array]") {
+                    form = {
+                        ...form,
+                        ...this.formatForm(v)
+                    };
+                } else {
+                    form[v.name] = "";
+                }
+            });
+            return form;
+        }
     }
 };
 </script>
-
 <style scoped lang="less">
+.btn-group {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 </style>

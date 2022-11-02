@@ -1,10 +1,10 @@
 <template>
-    <el-menu-item v-if="!menu.children" :index="menu.fullPath" :key="menu.fullPath">
+    <el-menu-item v-if="!menu.children" :index="menu.fullPath" :key="`if${menu.fullPath}`">
         <template slot="title">
             <span slot="title">{{ menu.title }}</span>
         </template>
     </el-menu-item>
-    <el-submenu v-else :key="menu.fullPath" :index="menu.fullPath">
+    <el-submenu v-else :key="`else${menu.fullPath}`" :index="menu.fullPath">
         <template slot="title">
             <span slot="title">{{ menu.title }}</span>
         </template>
@@ -15,7 +15,7 @@
 <script>
 export default {
     name: "menuItem",
-    props: ["menu"],
+    props: ["menu"]
 };
 </script>
 <style lang="less">
