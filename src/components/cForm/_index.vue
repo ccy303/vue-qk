@@ -38,7 +38,7 @@ export default {
         }
     },
     render(createElement) {
-        const { $slots, items, form, labelWidth, getDataType } = this;
+        const { $slots, items, form, labelWidth, $getDataType } = this;
         return createElement(
             "el-form",
             {
@@ -50,7 +50,7 @@ export default {
             },
             [
                 items?.map(item => {
-                    const type = getDataType(item);
+                    const type = $getDataType(item);
                     const renderItem = function (_item) {
                         return createElement(
                             "formItem",

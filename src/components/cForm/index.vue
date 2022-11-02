@@ -1,20 +1,20 @@
 <template>
     <el-form ref="formRef" :model="form" :label-width="labelWidth">
-        <template v-for="item in items">
+        <template v-for="(item, i) in items">
             <formItem
-                v-if="getDataType(item) == '[object Object]'"
+                v-if="$getDataType(item) == '[object Object]'"
                 v-model="form[item.name]"
                 :item="item"
                 :key="`if-${item.name}`"
             />
             <el-row
-                v-else-if="getDataType(item) == '[object Array]'"
+                v-else-if="$getDataType(item) == '[object Array]'"
                 :gutter="20"
-                :key="`else-${item.name}`"
+                :key="`else-${i}`"
             >
                 <el-col
-                    v-for="col in item"
-                    :span="Math.floor(24 / item.length)"
+                    v-for="col in initRowColSpan(item)"
+                    :span="col.colSpan"
                     :key="`col-${col.name}`"
                 >
                     <formItem v-model="form[col.name]" :item="col" />
@@ -62,19 +62,40 @@ export default {
         clearValidate() {
             this.$refs.formRef.clearValidate();
         },
+        setFields(values = {}) {
+            for (const key in values) {
+                this.form[key] = values[key];
+            }
+        },
         formatForm(data = []) {
             let form = {};
             data.map(v => {
-                if (this.getDataType(v) == "[object Array]") {
+                if (this.$getDataType(v) == "[object Array]") {
                     form = {
                         ...form,
                         ...this.formatForm(v)
                     };
                 } else {
-                    form[v.name] = "";
+                    v.name && (form[v.name] = undefined);
                 }
             });
             return form;
+        },
+        initRowColSpan(data) {
+            let span = 0,
+                len = 0;
+            data.map(v => {
+                if (v.colSpan) {
+                    span += v.colSpan;
+                    len++;
+                }
+            });
+            return data.map(v => {
+                if (!v.colSpan) {
+                    v.colSpan = Math.floor((24 - span) / (data.length - len));
+                }
+                return v;
+            });
         }
     }
 };

@@ -14,7 +14,10 @@ export default {
         const self = this;
         const { item, value } = self;
         const { name, type, label, props, options, ...arg } = item;
-        const { placeholder } = props;
+        const { placeholder } = props || {};
+        if (type == "render") {
+            return item.render(createElement);
+        }
         if (type == "text" || type == "textarea") {
             return createElement(
                 "el-form-item",
@@ -54,6 +57,7 @@ export default {
                                 placeholder: placeholder || `请选择${label}`,
                                 type
                             },
+                            style: { width: "100%" },
                             props: {
                                 ...props,
                                 value: value

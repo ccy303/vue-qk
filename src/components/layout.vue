@@ -50,7 +50,7 @@ export default {
         $route(to, from) {
             const currentRoute = this.$route.matched.slice(-1)[0];
             this.defauleActive =
-                this.getRouteByPathRegExp(currentRoute.regex)?.acPath || to.fullPath;
+                this.getRouteByPathRegExp(currentRoute.regex)?.acPath || to.path;
             this.updateBreadcrumb(currentRoute);
         }
     },

@@ -52,6 +52,7 @@ export default {
                         type: "select",
                         name: "name32",
                         options: [{ label: "选项", value: "选项" }],
+                        colSpan: 12,
                         props: {
                             disabled: false
                         }
