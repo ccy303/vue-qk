@@ -1,3 +1,4 @@
+import BigNumber from "bignumber.js";
 export default {
     $getDataType(data) {
         return Object.prototype.toString.call(data);
@@ -25,5 +26,17 @@ export default {
         } else {
             return false;
         }
+    },
+    // 格式化金额
+    $thousandBit(num) {
+        if (num === undefined || num === null || num === "" || isNaN(Number(num))) {
+            return "";
+        }
+        num = new BigNumber(num)?.toFixed(2);
+        return String(num).replace(/\d+/, _n => {
+            return _n.replace(/(\d)(?=(\d{3})+$)/g, $1 => {
+                return `${$1},`;
+            });
+        });
     }
 };
