@@ -4,7 +4,7 @@
         <el-container>
             <el-aside class="aside" width="200px">
                 <el-menu :router="true" :default-active="defauleActive" class="menu">
-                    <menuItem v-for="menu in menus" :menu="menu" :key="menu.title" />
+                    <menuItem v-for="menu in menus" :menu="menu" :key="menu.name" />
                 </el-menu>
             </el-aside>
             <el-main class="main">
@@ -48,29 +48,30 @@ export default {
     },
     watch: {
         $route(to, from) {
-            const currentRoute = this.$route.matched.slice(-1)[0];
-            this.defauleActive =
-                this.getRouteByPathRegExp(currentRoute.regex)?.acPath || to.path;
-            this.updateBreadcrumb(currentRoute);
+            this.defauleActive = to.meta.acPath || to.path;
+            this.breadcrumb = to.meta.breadcrumb || [{ title: to.name }];
         }
     },
     mounted() {
-        const currentRoute = this.$route.matched.slice(-1)[0];
+        console.log(this);
         this.menus = this.getMenus(this.$router.options.routes);
-        this.defauleActive =
-            this.getRouteByPathRegExp(currentRoute.regex)?.acPath || this.$route.path;
-        this.updateBreadcrumb(currentRoute);
+        this.defauleActive = this.$route.meta.acPath || this.$route.path;
+        this.breadcrumb = this.$route.meta.breadcrumb || [{ title: this.$route.name }];
     },
     methods: {
         getMenus(routes = [], path = "") {
             const menus = [];
+            const { g_userInfo, $checkAuth } = this;
             routes.map(route => {
                 route.fullPath = path + (route.path[0] == "/" ? route.path : `/${route.path}`);
+                if (route.meta.auth && !$checkAuth(g_userInfo.auth, route.meta.auth)) {
+                    return;
+                }
                 if (route.children) {
-                    if (route.menu) {
+                    if (route.meta.menu) {
                         menus.push({
                             path: route.path,
-                            title: route.title,
+                            name: route.name,
                             fullPath: route.fullPath,
                             children: this.getMenus(route.children, route.fullPath)
                         });
@@ -78,45 +79,15 @@ export default {
                         menus.push(...(this.getMenus(route.children, route.fullPath) || []));
                     }
                 } else {
-                    route.menu &&
+                    route.meta.menu &&
                         menus.push({
                             path: route.path,
-                            title: route.title,
+                            name: route.name,
                             fullPath: route.fullPath
                         });
                 }
             });
             return menus;
-        },
-
-        updateBreadcrumb(currentRoute, routes = this.$router.options.routes) {
-            if (!currentRoute) return [];
-            routes.map(route => {
-                if (currentRoute.regex.test(route.fullPath)) {
-                    this.breadcrumb = route.breadcrumb;
-                    return;
-                } else {
-                    if (route.children) {
-                        this.updateBreadcrumb(currentRoute, route.children);
-                    }
-                }
-            });
-        },
-
-        getRouteByPathRegExp(exp, routes = this.$router.options.routes) {
-            let out = null;
-            for (let i = 0; i < routes.length; i++) {
-                if (exp?.test(routes[i].fullPath)) {
-                    out = routes[i];
-                    break;
-                } else if (routes[i].children) {
-                    out = this.getRouteByPathRegExp(exp, routes[i].children);
-                    if (out) {
-                        break;
-                    }
-                }
-            }
-            return out;
         }
     }
 };
