@@ -87,3 +87,61 @@
 
 
     ```
+
+## <span style="color:#FF9900">重要组件</span>
+
+### form 表单
+
+-   使用
+
+    ```javascript
+
+    ...
+    import cform from "@src/components/cForm";
+
+    // ele-ui 原生属性暂时支持 只有 label-width ； 如需请自行添加或联系 ccy 添加
+
+    <cForm :items="items" :label-width="对应 ele-ui 中 from 中的相应属性"></cForm>;
+
+    ...
+
+    // 一个元素代表一个 el-form-item, 属性和element-ui相应属性对应
+    const items = [
+        // 普通表单项渲染
+        {
+            label: "对应 element-ui 中 form-item 的 label",
+            type: "form-item 的类型,目前暂时只支持 select input render, 参考下表，后续会补充支持范围",
+            name: "表单的数据 key",
+            rules?: ['对应 element-ui 中 form-item 的 rules'],
+            options?: ['type = select 时 对应 el-select 中的 下拉选项 { label: "*", value: "*" }'],
+            props?: {
+                disabled: false,
+                "prefix-icon": "el-icon-platform-eleme"
+                ...
+                // 传递给表单组件的props, 如 输入类型为 input 则支持所有 el-input 的属性值
+            }
+        },
+        // 基于 el-row / el-col 的表单项目渲染, item 项为一个数组
+        // 数组内的元素酒是一行渲染的表单项个数，如下: el-row 中将有两个表单项
+        // 关于 colSpan：如未指定该值，则 el-col 的 span = 24 / array.length；如指定则按实际 colSpan 值
+        // 如果部分表单项指定了colSpan属性，则未指定该属性的表单项的 span = (24 - 指定项所占值) / 未指定项数量 向前取整数
+        [
+            {
+                label: '',
+                type: '',
+                name: '',
+                colSpan?: Number,  // element-ui 的栅格系统，24 以内的数字
+                ...
+            },
+            {
+                label: '',
+                type: '',
+                name: '',
+                ...
+            },
+        ]
+    ]
+
+    ...
+
+    ```
