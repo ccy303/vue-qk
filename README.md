@@ -38,9 +38,9 @@
 
 基于 [vue-router](https://v3.router.vuejs.org/zh/) 实现, 支持所有 vue-router 属性
 
--   路由定义
+#### 路由定义
 
-    ```javascript
+```javascript
     // 无Layout路由（没有传统后台系统的侧边导航）
     {
         path: "/path",
@@ -85,63 +85,155 @@
         ]
     },
 
-
-    ```
+```
 
 ## <span style="color:#FF9900">重要组件</span>
 
 ### form 表单
 
--   使用
+-   基本使用
 
-    ```javascript
+```javascript
 
-    ...
-    import cform from "@src/components/cForm";
+...
+import cform from "@src/components/cForm";
 
-    // ele-ui 原生属性暂时支持 只有 label-width ； 如需请自行添加或联系 ccy 添加
+// ele-ui 原生属性暂时支持 只有 label-width ； 如需请自行添加或联系 ccy 添加
 
-    <cForm :items="items" :label-width="对应 ele-ui 中 from 中的相应属性"></cForm>;
+<cForm :items="items" :label-width="对应 ele-ui 中 form 中的相应属性"></cForm>;
 
-    ...
+...
 
-    // 一个元素代表一个 el-form-item, 属性和element-ui相应属性对应
-    const items = [
-        // 普通表单项渲染
+// 一个元素代表一个 el-form-item, 属性和element-ui相应属性对应
+const items = [
+    // 普通表单项渲染
+    {
+        label: "对应 element-ui 中 form-item 的 label",
+        type: "form-item 的类型,目前暂时只支持 select input render, 参考下表，后续会补充支持范围",
+        name: "表单的数据 key",
+        rules?: ['对应 element-ui 中 form-item 的 rules'],
+        options?: ['type = select 时 对应 el-select 中的 下拉选项 { label: "*", value: "*" }'],
+        props?: {
+            disabled: false,
+            "prefix-icon": "el-icon-platform-eleme"
+            ...
+            // 传递给表单组件的props, 如 输入类型为 input 则支持所有 el-input 的属性值
+        }
+    },
+    // 基于 el-row / el-col 的表单项目渲染, item 项为一个数组
+    // 数组内的元素酒是一行渲染的表单项个数，如下: el-row 中将有两个表单项
+    // 关于 colSpan：如未指定该值，则 el-col 的 span = 24 / array.length；如指定则按实际 colSpan 值
+    // 如果部分表单项指定了colSpan属性，则未指定该属性的表单项的 span = (24 - 指定项所占值) / 未指定项数量 向前取整数
+    [
         {
-            label: "对应 element-ui 中 form-item 的 label",
-            type: "form-item 的类型,目前暂时只支持 select input render, 参考下表，后续会补充支持范围",
-            name: "表单的数据 key",
-            rules?: ['对应 element-ui 中 form-item 的 rules'],
-            options?: ['type = select 时 对应 el-select 中的 下拉选项 { label: "*", value: "*" }'],
-            props?: {
-                disabled: false,
-                "prefix-icon": "el-icon-platform-eleme"
-                ...
-                // 传递给表单组件的props, 如 输入类型为 input 则支持所有 el-input 的属性值
-            }
+            label: '',
+            type: '',
+            name: '',
+            colSpan?: Number,  // element-ui 的栅格系统，24 以内的数字
+            ...
         },
-        // 基于 el-row / el-col 的表单项目渲染, item 项为一个数组
-        // 数组内的元素酒是一行渲染的表单项个数，如下: el-row 中将有两个表单项
-        // 关于 colSpan：如未指定该值，则 el-col 的 span = 24 / array.length；如指定则按实际 colSpan 值
-        // 如果部分表单项指定了colSpan属性，则未指定该属性的表单项的 span = (24 - 指定项所占值) / 未指定项数量 向前取整数
-        [
-            {
-                label: '',
-                type: '',
-                name: '',
-                colSpan?: Number,  // element-ui 的栅格系统，24 以内的数字
-                ...
-            },
-            {
-                label: '',
-                type: '',
-                name: '',
-                ...
-            },
-        ]
+        {
+            label: '',
+            type: '',
+            name: '',
+            ...
+        },
     ]
+]
 
+...
+
+```
+
+-   其他
+
+```javascript
+// 为表单添加炒作按钮
+import cform from "@src/components/cForm";
+...
+<cForm>
+    <template v-slot:btns>
+        <el-button>提交</el-button>
+        <el-button>校验</el-button>
+        <el-button>重置</el-button>
+    </template>
+</cForm>
+...
+
+// 对外接口
+...
+<cForm ref="form"></cForm>
+...
+<script>
     ...
+    // 校验表单所有输入项, 校验通过返回表单数据，否则抛出异常
+    async this.$refs.form.validate()
+    // 校验表单 name = field 的输入项,同 ele-ui 的 form.validateField
+    this.$refs.form.validateField(field, callback)
+    // 同 ele-ui 的 form.resetFields
+    this.$refs.form.resetFields()
+    // 同 ele-ui 的 form.clearValidate
+    this.$refs.form.clearValidate()
+    // 设置表单输入项值
+    this.$refs.form.setFields(values: { name: value })
+    ...
+</script>
+```
 
-    ```
+### tableList 表单
+
+tableList 包括搜索项和表格
+
+```javascript
+...
+import cTable from "@src/components/cTable";
+
+<cTable :columns="columns" :requestFun="getData" :tablsConfig="{}" :searchConfig="searchConfig">
+    <!-- 操作列，也可通过columns中的自定义渲染函数渲染 -->
+    <template v-slot:action="scope">
+        <el-button @click="click(scope)">处理按钮</el-button>
+    </template>
+</cTable>;
+
+// 配置项
+
+// tablsConfig : ele-ui 中 el-table 的所有配置项
+
+// columns : 表格的列配置
+const columns = [
+    {
+        label: "label", // 表头
+        prop: "prop", // 对应 ele-ui Table-column Attributes 中的 prop
+
+        ... // 支持 ele-ui TableColumn 中其他属性
+
+        // 自定义渲染函数
+        // text：当前数据
+        // row：所在行数据
+        // index：索引
+        // h： vue的渲染函数，参考vue文档
+        render: (text, row, index, h) => {
+            return text;
+        }
+    }
+]
+
+// pageConfig：{ } 分页器配置，支持ele-ui 中 el-pagination 配置
+
+// requestFun：() => Promise.resolve({ data: 数据 , total: 数据总数 }) 数据请求函数，需要在函数中
+
+// showIndex：true 是否展示数据索引
+
+// search2Url：true  搜素入参写入url
+
+// searchConfig： { }  搜索表单配置，同 cform 普通表单项渲染
+
+```
+
+## Vue 全局数据说明
+
+| 变量            | 说明                                               |
+| --------------- | -------------------------------------------------- |
+| this.$http      | 全局 http 请求通道，项目中所有接口请求用此方法发送 |
+| this.g_userInfo | 全局用户数据，用户登录后，用户信息会注入此变量     |
+| this.$xxx       | 公共方法                                           |
