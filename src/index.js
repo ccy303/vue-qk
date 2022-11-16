@@ -19,6 +19,7 @@ import https from "@src/https";
     }
 
     const vueRouter = new VueRouter({
+        mode: "history",
         routes: routes
     });
 
