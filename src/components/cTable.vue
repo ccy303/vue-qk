@@ -23,11 +23,11 @@ export default {
         },
         tableConfig: {
             type: [Object, null],
-            default: () => {}
+            default: () => ({})
         },
         pageConfig: {
             type: [Object, null],
-            default: () => {}
+            default: () => ({})
         },
         requestFun: {
             type: [Function, null],

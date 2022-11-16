@@ -1,11 +1,17 @@
 <template>
     <div>
-        <el-button>登录</el-button>
+        <el-button @click="login">登录</el-button>
     </div>
 </template>
 
 <script>
-export default {};
+export default {
+    methods: {
+        login() {
+            this.$router.push("/");
+        }
+    }
+};
 </script>
 
 <style>

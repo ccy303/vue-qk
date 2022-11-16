@@ -44,7 +44,7 @@ export default [
             {
                 path: "list2",
                 name: "二级",
-                component: UserProfile,
+                component: () => import("@src/pages/page3"),
                 meta: {
                     menu: true,
                     breadcrumb: [

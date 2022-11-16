@@ -53,7 +53,6 @@ export default {
         }
     },
     mounted() {
-        console.log(this);
         this.menus = this.getMenus(this.$router.options.routes);
         this.defauleActive = this.$route.meta.acPath || this.$route.path;
         this.breadcrumb = this.$route.meta.breadcrumb || [{ title: this.$route.name }];
