@@ -115,7 +115,7 @@ module.exports = {
         },
         proxy: {
             "/api": {
-                target: "http://127.0.0.1:4523/m1/1935751-0-default",
+                target: "http://127.0.0.1:4523/m1/1941353-0-default",
                 // target: "http://eac.yry.sit.linkfin.caih.local",
                 // target: "http://127.0.0.1:4523/m1/1341514-0-default",
                 // pathRewrite: { "^/api": "" },
