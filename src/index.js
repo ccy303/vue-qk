@@ -9,6 +9,8 @@ import "@src/styles/common.less";
 import https from "@src/https";
 
 (async () => {
+    Vue.use(ElementUI, { size: "medium", zIndex: 3000 });
+
     let userInfo = null;
 
     try {
@@ -34,8 +36,6 @@ import https from "@src/https";
     Vue.prototype.$http = https;
 
     Vue.use(VueRouter);
-
-    Vue.use(ElementUI, { size: "medium", zIndex: 3000 });
 
     Vue.mixin({
         data() {

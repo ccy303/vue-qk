@@ -1,6 +1,6 @@
 import Axios from "axios";
 const ax = Axios.create({});
-
+import Vue from "vue";
 // 请求拦截
 ax.interceptors.request.use(config => {
     if (config.method.toLocaleLowerCase() === "get") {
@@ -22,7 +22,11 @@ ax.interceptors.response.use(
             : { data, headers };
     },
     err => {
-        // !err?.response?.config?.headers?.["NO-E-MSG"] && message.error(err.response.data.message);
+        !err?.response?.config?.headers?.["NO-E-MSG"] &&
+            Vue.prototype.$message({
+                type: "error",
+                message: err.response.data.message
+            });
         // if (err.response.status == "401" && !!!err?.response?.config?.headers?.["NO-REDIRECT"]) {
         //     setTimeout(() => {
         //         window.location = "/#/login";
