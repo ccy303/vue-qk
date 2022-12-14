@@ -19,11 +19,11 @@ module.exports = {
         filename: "js/[name].js",
         chunkFilename: "js/[name].chunk.js"
     },
-    devtool: "cheap-module-source-map",
+    devtool: "source-map",
     module: {
         rules: [
             {
-                test: /\.js$/,
+                test: /\.(m)?js$/,
                 use: ["babel-loader"]
             },
             {
@@ -76,6 +76,13 @@ module.exports = {
                         generator: {
                             filename: "assets/file/[name][ext]"
                         }
+                    },
+                    {
+                        test: /\.(woff|ttf)$/i,
+                        type: "asset",
+                        generator: {
+                            filename: "assets/font/[hash][ext][query]"
+                        }
                     }
                 ]
             }
@@ -87,11 +94,13 @@ module.exports = {
             template: "./public/template.html",
             filename: "index.html",
             favicon: "./favicon.ico",
-            title: "标题"
+            title: "",
+            hash: true
         }),
         new CleanWebpackPlugin({ verbose: true }),
         new ESLintPlugin({}),
-        new VueLoaderPlugin()
+        new VueLoaderPlugin(),
+        new webpack.DefinePlugin({})
     ],
     resolve: {
         // 自动补全后缀，注意第一个必须是空字符串,后缀一定以点开头
@@ -99,11 +108,13 @@ module.exports = {
         alias: {
             "@root": path.resolve(__dirname, "../"),
             "@src": path.resolve(__dirname, "../src"),
-            vue$: "vue/dist/vue.esm.js"
-        }
+            vue$: "vue/dist/vue.esm.js",
+            "element-ui": path.resolve(__dirname, "../public/element-ui/lib/index.js")
+        },
+        fallback: { crypto: false }
     },
     devServer: {
-        port: 22325, // 端口
+        port: 2325, // 端口
         host: "localhost",
         hot: true,
         open: true,
@@ -111,14 +122,17 @@ module.exports = {
             writeToDisk: true
         },
         client: {
-            progress: true
+            progress: true,
+            logging: "none"
         },
+        historyApiFallback: true,
         proxy: {
             "/api": {
                 target: "http://127.0.0.1:4523/m1/1941353-0-default",
-                // target: "http://eac.yry.sit.linkfin.caih.local",
+                // target: "http://baiji.sit.linkfin.caih.local/baiji",
+                // target: "http://baiji.dev.linkfin.caih.local/baiji",
                 // target: "http://127.0.0.1:4523/m1/1341514-0-default",
-                // pathRewrite: { "^/api": "" },
+                pathRewrite: { "^/api": "" },
                 changeOrigin: true
             }
         }

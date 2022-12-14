@@ -4,7 +4,7 @@ import VueRouter from "vue-router";
 import ElementUI from "element-ui";
 import routes from "./routes";
 import utils from "./utils";
-import "element-ui/lib/theme-chalk/index.css";
+import "../public/theme/index.css";
 import "@src/styles/common.less";
 import https from "@src/https";
 

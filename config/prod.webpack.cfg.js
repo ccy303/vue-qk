@@ -8,24 +8,27 @@ const CompressionPlugin = require("compression-webpack-plugin");
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
 const VueLoaderPlugin = require("vue-loader/lib/plugin");
+const CopyPlugin = require("copy-webpack-plugin");
+
 const handler = (percentage, message, ...args) => {
     console.info(`${(percentage * 100).toFixed(2)}%`, message, ...args);
 };
 module.exports = {
     mode: "production",
+    target: ["web", "es5"],
     entry: {
         app: "./src/index.js"
     },
     output: {
         path: path.join(__dirname, "../dist"), // 出口目录，dist文件
-        publicPath: "/",
+        publicPath: `${process.env.VUE_ROUTE_BASE_PATH || "/"}`,
         filename: "js/[name].[chunkhash].js",
         chunkFilename: "js/[name].chunk.[chunkhash].js"
     },
     module: {
         rules: [
             {
-                test: /\.js$/,
+                test: /\.(m?)js$/,
                 use: {
                     loader: "babel-loader"
                 }
@@ -39,26 +42,13 @@ module.exports = {
                     {
                         test: /\.css$/,
                         use: [
-                            MiniCssExtractPlugin.loader,
+                            {
+                                loader: MiniCssExtractPlugin.loader,
+                                options: {}
+                            },
                             {
                                 loader: "css-loader",
-                                options: {
-                                    modules: {
-                                        // localIdentName: "[local]-[hash:base64:10]",
-                                        // getLocalIdent: (context, localIdentName, localName) => {
-                                        // 	const path = context._module.context;
-                                        // 	if (
-                                        // 		/^((?!node_modules).)*(src){1}.*(components){1}.*$/.test(
-                                        // 			path
-                                        // 		)
-                                        // 	) {
-                                        // 		return;
-                                        // 	} else {
-                                        // 		return localName;
-                                        // 	}
-                                        // },
-                                    }
-                                }
+                                options: {}
                             },
                             "postcss-loader"
                         ]
@@ -66,26 +56,13 @@ module.exports = {
                     {
                         test: /\.less$/,
                         use: [
-                            MiniCssExtractPlugin.loader,
+                            {
+                                loader: MiniCssExtractPlugin.loader,
+                                options: {}
+                            },
                             {
                                 loader: "css-loader",
-                                options: {
-                                    modules: {
-                                        // localIdentName: "[local]-[hash:base64:10]",
-                                        // getLocalIdent: (context, localIdentName, localName) => {
-                                        // 	const path = context._module.context;
-                                        // 	if (
-                                        // 		/^((?!node_modules).)*(src){1}.*(components){1}.*$/.test(
-                                        // 			path
-                                        // 		)
-                                        // 	) {
-                                        // 		return;
-                                        // 	} else {
-                                        // 		return localName;
-                                        // 	}
-                                        // },
-                                    }
-                                }
+                                options: {}
                             },
                             "postcss-loader",
                             {
@@ -112,6 +89,13 @@ module.exports = {
                         generator: {
                             filename: "assets/file/[name][ext]"
                         }
+                    },
+                    {
+                        test: /\.(woff|ttf)$/i,
+                        type: "asset",
+                        generator: {
+                            filename: "assets/font/[hash][ext][query]"
+                        }
                     }
                 ]
             }
@@ -122,24 +106,27 @@ module.exports = {
         alias: {
             "@root": path.resolve(__dirname, "../"),
             "@src": path.resolve(__dirname, "../src"),
-            vue$: "vue/dist/vue.esm.js"
+            vue$: "vue/dist/vue.esm.js",
+            "element-ui": path.resolve(__dirname, "../public/element-ui/lib/index.js")
         }
     },
     plugins: [
         // new BundleAnalyzerPlugin(),
         new webpack.ProgressPlugin(handler),
+        // new CopyPlugin(),
         new HtmlWebpackPlugin({
             template: "./public/template.html",
             filename: "index.html",
             favicon: "./favicon.ico",
-            title: "标题"
+            title: "北部湾经济区金融服务平台"
         }),
         new CleanWebpackPlugin({ verbose: true }),
         new MiniCssExtractPlugin({
             filename: "css/[name].[contenthash].css",
             chunkFilename: "css/[name].[contenthash].css"
         }),
-        new VueLoaderPlugin()
+        new VueLoaderPlugin(),
+        new webpack.DefinePlugin({})
     ],
     optimization: {
         minimizer: [
