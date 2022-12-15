@@ -24,7 +24,9 @@ module.exports = {
         rules: [
             {
                 test: /\.(m)?js$/,
-                use: ["babel-loader"]
+                use: {
+                    loader: "babel-loader"
+                }
             },
             {
                 test: /\.vue$/,
@@ -117,7 +119,7 @@ module.exports = {
         port: 2325, // 端口
         host: "localhost",
         hot: true,
-        open: true,
+        // open: true,
         devMiddleware: {
             writeToDisk: true
         },

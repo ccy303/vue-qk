@@ -13,14 +13,9 @@ module.exports = function (api) {
     const plugins = [];
     const ignore = [
         filename => {
-            console.log(
-                filename,
-                !/^(((?!node_modules).)*(js|jsx|ts|tsx|vue))|(.*(node_modules).*(copy-anything|is-what|axios).*(\.(m)?js|\.vue)$)/.test(
-                    filename
-                )
-            );
-            return !/^(((?!node_modules).)*(js|jsx|ts|tsx|vue))|(.*(node_modules).*(copy-anything|is-what|axios).*(\.(m)?js|\.vue)$)/.test(
-                filename
+            return (
+                /node_modules/.test(filename) ||
+                !/.*(node_modules).*(copy-anything|is-what|axios).*(\.(m)?js|\.vue)$/.test(filename)
             );
         }
     ];

@@ -14,13 +14,15 @@ import https from "@src/https";
     let userInfo = null;
 
     try {
-        ({ data: userInfo } = await https.user.getUser());
+        // ({ data: userInfo } = await https.user.getUser());
+        userInfo = {};
         userInfo.auth = ["a", "b"];
     } catch (err) {
         console.log(err);
     }
 
     const vueRouter = new VueRouter({
+        mode: "history",
         routes: routes
     });
 
@@ -47,6 +49,9 @@ import https from "@src/https";
             ...utils
         }
     });
+
+    // event bug
+    Vue.prototype.$EB = new Vue();
 
     new Vue({
         el: "#root",
