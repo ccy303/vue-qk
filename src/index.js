@@ -10,6 +10,12 @@ import https from "@src/https";
 
 (async () => {
     Vue.use(ElementUI, { size: "medium", zIndex: 3000 });
+    const vueRouter = new VueRouter({
+        mode: "history",
+        routes: routes
+    });
+
+    Vue.use(VueRouter);
 
     let userInfo = null;
 
@@ -20,11 +26,6 @@ import https from "@src/https";
     } catch (err) {
         console.log(err);
     }
-
-    const vueRouter = new VueRouter({
-        mode: "history",
-        routes: routes
-    });
 
     vueRouter.beforeEach((to, from, next) => {
         if (!userInfo && to.meta.logined !== false) {
@@ -37,7 +38,6 @@ import https from "@src/https";
 
     Vue.prototype.$http = https;
 
-    Vue.use(VueRouter);
 
     Vue.mixin({
         data() {

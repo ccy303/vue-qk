@@ -16,22 +16,36 @@ ax.interceptors.request.use(config => {
 // 响应拦截
 ax.interceptors.response.use(
     response => {
-        const { data, headers } = response;
-        return response.headers["x-total-count"]
-            ? { data: data, total: headers["x-total-count"], headers }
-            : { data, headers };
+        const { data, headers, config } = response;
+        if (data.code != 200 && !config?.headers?.["NO-E-MSG"]) {
+            Vue.prototype.$message({
+                type: "error",
+                message: data.message
+            });
+            return Promise.reject({ data, headers });
+        }
+        return { data, headers };
     },
     err => {
+        if (err.response.status == 401 && !err?.response?.config?.headers?.["NO-REDIRECT"]) {
+            Vue.prototype.$message({
+                type: "error",
+                message: "登录失效",
+                duration: 1500,
+                onClose: () => {
+                    location.href = `/login`;
+                }
+            });
+            return;
+        }
         !err?.response?.config?.headers?.["NO-E-MSG"] &&
             Vue.prototype.$message({
                 type: "error",
-                message: err.response.data.message
+                message:
+                    err?.response?.status == "403"
+                        ? "无权限"
+                        : err.response.data.message || "系统错误"
             });
-        // if (err.response.status == "401" && !!!err?.response?.config?.headers?.["NO-REDIRECT"]) {
-        //     setTimeout(() => {
-        //         window.location = "/#/login";
-        //     }, 1000);
-        // }
         return Promise.reject(err);
     }
 );

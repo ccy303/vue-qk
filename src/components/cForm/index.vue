@@ -28,83 +28,103 @@
 </template>
 
 <script>
-import formItem from "./formItem";
-export default {
-    name: "cForm",
-    data() {
-        const form = this.formatForm(this.items);
-        return { form };
-    },
-    props: {
-        items: {
-            type: Array,
-            default: () => []
+    import formItem from "./formItem";
+    export default {
+        name: "cForm",
+        data() {
+            const form = this.formatForm(this.items);
+
+            return { form };
         },
-        ["label-width"]: {
-            type: String,
-            default: "100px"
-        }
-    },
-    components: {
-        formItem
-    },
-    methods: {
-        async validate() {
-            await this.$refs.formRef.validate();
-            return JSON.parse(JSON.stringify(this.form));
-        },
-        validateField(names, callback) {
-            this.$refs.formRef.validateField(names, callback);
-        },
-        resetFields() {
-            this.$refs.formRef.resetFields();
-        },
-        clearValidate() {
-            this.$refs.formRef.clearValidate();
-        },
-        setFields(values = {}) {
-            for (const key in values) {
-                this.form[key] = values[key];
+        props: {
+            items: {
+                type: Array,
+                default: () => []
+            },
+            onChange: {
+                type: Function
+            },
+            ["label-width"]: {
+                type: String,
+                default: "100px"
             }
         },
-        formatForm(data = []) {
-            let form = {};
-            data.map(v => {
-                if (this.$getDataType(v) == "[object Array]") {
-                    form = {
-                        ...form,
-                        ...this.formatForm(v)
-                    };
-                } else {
-                    v.name && (form[v.name] = undefined);
-                }
-            });
-            return form;
+        components: {
+            formItem
         },
-        initRowColSpan(data) {
-            let span = 0,
-                len = 0;
-            data.map(v => {
-                if (v.colSpan) {
-                    span += v.colSpan;
-                    len++;
+        created() {
+            for (let key in this.form) {
+                this.$watch(`form.${key}`, function (n, o) {
+                    this.onChange?.(`form.${key}`, n, o);
+                });
+            }
+        },
+        methods: {
+            async validate() {
+                await this.$refs.formRef.validate();
+                return JSON.parse(JSON.stringify(this.form));
+            },
+            validateField(names, callback) {
+                setTimeout(() => {
+                    this.$refs.formRef.validateField(names, callback);
+                });
+            },
+            resetFields() {
+                this.$refs.formRef.resetFields();
+            },
+            clearValidate() {
+                this.$refs.formRef.clearValidate();
+            },
+            setFields(values = {}) {
+                for (const key in values) {
+                    this.form[key] = values[key];
                 }
-            });
-            return data.map(v => {
-                if (!v.colSpan) {
-                    v.colSpan = Math.floor((24 - span) / (data.length - len));
-                }
-                return v;
-            });
+            },
+            formatForm(data = []) {
+                let form = {};
+                data.map(v => {
+                    if (this.$getDataType(v) == "[object Array]") {
+                        form = {
+                            ...form,
+                            ...this.formatForm(v)
+                        };
+                    } else {
+                        v.name &&
+                            (form[v.name] =
+                                v.type == "checkbox" || v.type == "upload" ? [] : undefined);
+                    }
+                });
+                return form;
+            },
+            initRowColSpan(data) {
+                let span = 0,
+                    len = 0;
+                data.map(v => {
+                    if (v.colSpan) {
+                        span += v.colSpan;
+                        len++;
+                    }
+                });
+                return data.map(v => {
+                    if (!v.colSpan) {
+                        v.colSpan = Math.floor((24 - span) / (data.length - len));
+                    }
+                    return v;
+                });
+            }
         }
-    }
-};
+    };
 </script>
 <style scoped lang="less">
-.btn-group {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
+    .btn-group {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    ::v-deep .el-range-editor--medium {
+        width: auto;
+        min-width: 200px;
+    }
 </style>
